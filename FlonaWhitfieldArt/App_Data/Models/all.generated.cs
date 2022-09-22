@@ -8,7 +8,7 @@ using  Umbraco.Web;
 using  Umbraco.ModelsBuilder;
 using  Umbraco.ModelsBuilder.Umbraco;
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "aed9e12e0ba1c198")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "c5901ca8ac876f66")]
 [assembly:System.Reflection.AssemblyVersion("0.0.0.1")]
 
 
@@ -42,7 +42,7 @@ namespace Umbraco.Web.PublishedContentModels
 {
 	/// <summary>Home</summary>
 	[PublishedContentModel("home")]
-	public partial class Home : PublishedContentModel, IIntroControls
+	public partial class Home : PublishedContentModel, IFeaturedItemsControls, IIntroControls, ILatesBlogPostsControls, ITestimonialsControls
 	{
 #pragma warning disable 0109 // new is redundant
 		public new const string ModelTypeAlias = "home";
@@ -66,12 +66,66 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 
 		///<summary>
+		/// Featured Items: Enter the featured  items to display in the featured section
+		///</summary>
+		[ImplementPropertyType("featuredItems")]
+		public Archetype.Models.ArchetypeModel FeaturedItems
+		{
+			get { return Umbraco.Web.PublishedContentModels.FeaturedItemsControls.GetFeaturedItems(this); }
+		}
+
+		///<summary>
 		/// Intro: Enter you introduction text here
 		///</summary>
 		[ImplementPropertyType("intro")]
 		public string Intro
 		{
 			get { return Umbraco.Web.PublishedContentModels.IntroControls.GetIntro(this); }
+		}
+
+		///<summary>
+		/// Latest Blog Posts Introduction: Enter the introduction text for the latest blog post section
+		///</summary>
+		[ImplementPropertyType("latestBlogPostsIntroduction")]
+		public IHtmlString LatestBlogPostsIntroduction
+		{
+			get { return Umbraco.Web.PublishedContentModels.LatesBlogPostsControls.GetLatestBlogPostsIntroduction(this); }
+		}
+
+		///<summary>
+		/// Latest Blog Posts Title: Enter the title for the latest blog posts section
+		///</summary>
+		[ImplementPropertyType("latestBlogPostsTitle")]
+		public string LatestBlogPostsTitle
+		{
+			get { return Umbraco.Web.PublishedContentModels.LatesBlogPostsControls.GetLatestBlogPostsTitle(this); }
+		}
+
+		///<summary>
+		/// Testimonial List: Enter the testimonialto display
+		///</summary>
+		[ImplementPropertyType("testimonialList")]
+		public Archetype.Models.ArchetypeModel TestimonialList
+		{
+			get { return Umbraco.Web.PublishedContentModels.TestimonialsControls.GetTestimonialList(this); }
+		}
+
+		///<summary>
+		/// Testimonials Introduction: Enter the introduction content testimonials section
+		///</summary>
+		[ImplementPropertyType("testimonialsIntroduction")]
+		public IHtmlString TestimonialsIntroduction
+		{
+			get { return Umbraco.Web.PublishedContentModels.TestimonialsControls.GetTestimonialsIntroduction(this); }
+		}
+
+		///<summary>
+		/// Testimonials Title: Enter the title for the testimonials section
+		///</summary>
+		[ImplementPropertyType("testimonialsTitle")]
+		public string TestimonialsTitle
+		{
+			get { return Umbraco.Web.PublishedContentModels.TestimonialsControls.GetTestimonialsTitle(this); }
 		}
 	}
 
@@ -519,6 +573,321 @@ namespace Umbraco.Web.PublishedContentModels
 
 		/// <summary>Static getter for Exclude From Top Navigation</summary>
 		public static bool GetExcludeFromTopNavigation(ITopNavigationControls that) { return that.GetPropertyValue<bool>("excludeFromTopNavigation"); }
+	}
+
+	// Mixin content Type 1101 with alias "articleControls"
+	/// <summary>Article Controls</summary>
+	public partial interface IArticleControls : IPublishedContent
+	{
+		/// <summary>Article Intro</summary>
+		string ArcticleIntro { get; }
+
+		/// <summary>Article Image</summary>
+		IPublishedContent ArticleImage { get; }
+	}
+
+	/// <summary>Article Controls</summary>
+	[PublishedContentModel("articleControls")]
+	public partial class ArticleControls : PublishedContentModel, IArticleControls
+	{
+#pragma warning disable 0109 // new is redundant
+		public new const string ModelTypeAlias = "articleControls";
+		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
+#pragma warning restore 0109
+
+		public ArticleControls(IPublishedContent content)
+			: base(content)
+		{ }
+
+#pragma warning disable 0109 // new is redundant
+		public new static PublishedContentType GetModelContentType()
+		{
+			return PublishedContentType.Get(ModelItemType, ModelTypeAlias);
+		}
+#pragma warning restore 0109
+
+		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<ArticleControls, TValue>> selector)
+		{
+			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
+		}
+
+		///<summary>
+		/// Article Intro: Enter some text as the introdution to the arcticle
+		///</summary>
+		[ImplementPropertyType("arcticleIntro")]
+		public string ArcticleIntro
+		{
+			get { return GetArcticleIntro(this); }
+		}
+
+		/// <summary>Static getter for Article Intro</summary>
+		public static string GetArcticleIntro(IArticleControls that) { return that.GetPropertyValue<string>("arcticleIntro"); }
+
+		///<summary>
+		/// Article Image: Choose the image for the article
+		///</summary>
+		[ImplementPropertyType("articleImage")]
+		public IPublishedContent ArticleImage
+		{
+			get { return GetArticleImage(this); }
+		}
+
+		/// <summary>Static getter for Article Image</summary>
+		public static IPublishedContent GetArticleImage(IArticleControls that) { return that.GetPropertyValue<IPublishedContent>("articleImage"); }
+	}
+
+	/// <summary>Blog Post</summary>
+	[PublishedContentModel("blogPost")]
+	public partial class BlogPost : PublishedContentModel, IArticleControls, IBasicContentControls, ITitleControls
+	{
+#pragma warning disable 0109 // new is redundant
+		public new const string ModelTypeAlias = "blogPost";
+		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
+#pragma warning restore 0109
+
+		public BlogPost(IPublishedContent content)
+			: base(content)
+		{ }
+
+#pragma warning disable 0109 // new is redundant
+		public new static PublishedContentType GetModelContentType()
+		{
+			return PublishedContentType.Get(ModelItemType, ModelTypeAlias);
+		}
+#pragma warning restore 0109
+
+		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<BlogPost, TValue>> selector)
+		{
+			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
+		}
+
+		///<summary>
+		/// Article Intro: Enter some text as the introdution to the arcticle
+		///</summary>
+		[ImplementPropertyType("arcticleIntro")]
+		public string ArcticleIntro
+		{
+			get { return Umbraco.Web.PublishedContentModels.ArticleControls.GetArcticleIntro(this); }
+		}
+
+		///<summary>
+		/// Article Image: Choose the image for the article
+		///</summary>
+		[ImplementPropertyType("articleImage")]
+		public IPublishedContent ArticleImage
+		{
+			get { return Umbraco.Web.PublishedContentModels.ArticleControls.GetArticleImage(this); }
+		}
+
+		///<summary>
+		/// Content Gird: Enter the content for the page
+		///</summary>
+		[ImplementPropertyType("contentGird")]
+		public Newtonsoft.Json.Linq.JToken ContentGird
+		{
+			get { return Umbraco.Web.PublishedContentModels.BasicContentControls.GetContentGird(this); }
+		}
+
+		///<summary>
+		/// Sub Title: Enter the title to show under the main title
+		///</summary>
+		[ImplementPropertyType("subTitle")]
+		public IHtmlString SubTitle
+		{
+			get { return Umbraco.Web.PublishedContentModels.TitleControls.GetSubTitle(this); }
+		}
+
+		///<summary>
+		/// Title: Enter the title for the page. If this is left blank, the name of the page will  be used.
+		///</summary>
+		[ImplementPropertyType("title")]
+		public string Title
+		{
+			get { return Umbraco.Web.PublishedContentModels.TitleControls.GetTitle(this); }
+		}
+	}
+
+	// Mixin content Type 1114 with alias "latesBlogPostsControls"
+	/// <summary>Lates Blog Posts Controls</summary>
+	public partial interface ILatesBlogPostsControls : IPublishedContent
+	{
+		/// <summary>Latest Blog Posts Introduction</summary>
+		IHtmlString LatestBlogPostsIntroduction { get; }
+
+		/// <summary>Latest Blog Posts Title</summary>
+		string LatestBlogPostsTitle { get; }
+	}
+
+	/// <summary>Lates Blog Posts Controls</summary>
+	[PublishedContentModel("latesBlogPostsControls")]
+	public partial class LatesBlogPostsControls : PublishedContentModel, ILatesBlogPostsControls
+	{
+#pragma warning disable 0109 // new is redundant
+		public new const string ModelTypeAlias = "latesBlogPostsControls";
+		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
+#pragma warning restore 0109
+
+		public LatesBlogPostsControls(IPublishedContent content)
+			: base(content)
+		{ }
+
+#pragma warning disable 0109 // new is redundant
+		public new static PublishedContentType GetModelContentType()
+		{
+			return PublishedContentType.Get(ModelItemType, ModelTypeAlias);
+		}
+#pragma warning restore 0109
+
+		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<LatesBlogPostsControls, TValue>> selector)
+		{
+			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
+		}
+
+		///<summary>
+		/// Latest Blog Posts Introduction: Enter the introduction text for the latest blog post section
+		///</summary>
+		[ImplementPropertyType("latestBlogPostsIntroduction")]
+		public IHtmlString LatestBlogPostsIntroduction
+		{
+			get { return GetLatestBlogPostsIntroduction(this); }
+		}
+
+		/// <summary>Static getter for Latest Blog Posts Introduction</summary>
+		public static IHtmlString GetLatestBlogPostsIntroduction(ILatesBlogPostsControls that) { return that.GetPropertyValue<IHtmlString>("latestBlogPostsIntroduction"); }
+
+		///<summary>
+		/// Latest Blog Posts Title: Enter the title for the latest blog posts section
+		///</summary>
+		[ImplementPropertyType("latestBlogPostsTitle")]
+		public string LatestBlogPostsTitle
+		{
+			get { return GetLatestBlogPostsTitle(this); }
+		}
+
+		/// <summary>Static getter for Latest Blog Posts Title</summary>
+		public static string GetLatestBlogPostsTitle(ILatesBlogPostsControls that) { return that.GetPropertyValue<string>("latestBlogPostsTitle"); }
+	}
+
+	// Mixin content Type 1115 with alias "testimonialsControls"
+	/// <summary>Testimonials Controls</summary>
+	public partial interface ITestimonialsControls : IPublishedContent
+	{
+		/// <summary>Testimonial List</summary>
+		Archetype.Models.ArchetypeModel TestimonialList { get; }
+
+		/// <summary>Testimonials Introduction</summary>
+		IHtmlString TestimonialsIntroduction { get; }
+
+		/// <summary>Testimonials Title</summary>
+		string TestimonialsTitle { get; }
+	}
+
+	/// <summary>Testimonials Controls</summary>
+	[PublishedContentModel("testimonialsControls")]
+	public partial class TestimonialsControls : PublishedContentModel, ITestimonialsControls
+	{
+#pragma warning disable 0109 // new is redundant
+		public new const string ModelTypeAlias = "testimonialsControls";
+		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
+#pragma warning restore 0109
+
+		public TestimonialsControls(IPublishedContent content)
+			: base(content)
+		{ }
+
+#pragma warning disable 0109 // new is redundant
+		public new static PublishedContentType GetModelContentType()
+		{
+			return PublishedContentType.Get(ModelItemType, ModelTypeAlias);
+		}
+#pragma warning restore 0109
+
+		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<TestimonialsControls, TValue>> selector)
+		{
+			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
+		}
+
+		///<summary>
+		/// Testimonial List: Enter the testimonialto display
+		///</summary>
+		[ImplementPropertyType("testimonialList")]
+		public Archetype.Models.ArchetypeModel TestimonialList
+		{
+			get { return GetTestimonialList(this); }
+		}
+
+		/// <summary>Static getter for Testimonial List</summary>
+		public static Archetype.Models.ArchetypeModel GetTestimonialList(ITestimonialsControls that) { return that.GetPropertyValue<Archetype.Models.ArchetypeModel>("testimonialList"); }
+
+		///<summary>
+		/// Testimonials Introduction: Enter the introduction content testimonials section
+		///</summary>
+		[ImplementPropertyType("testimonialsIntroduction")]
+		public IHtmlString TestimonialsIntroduction
+		{
+			get { return GetTestimonialsIntroduction(this); }
+		}
+
+		/// <summary>Static getter for Testimonials Introduction</summary>
+		public static IHtmlString GetTestimonialsIntroduction(ITestimonialsControls that) { return that.GetPropertyValue<IHtmlString>("testimonialsIntroduction"); }
+
+		///<summary>
+		/// Testimonials Title: Enter the title for the testimonials section
+		///</summary>
+		[ImplementPropertyType("testimonialsTitle")]
+		public string TestimonialsTitle
+		{
+			get { return GetTestimonialsTitle(this); }
+		}
+
+		/// <summary>Static getter for Testimonials Title</summary>
+		public static string GetTestimonialsTitle(ITestimonialsControls that) { return that.GetPropertyValue<string>("testimonialsTitle"); }
+	}
+
+	// Mixin content Type 1118 with alias "featuredItemsControls"
+	/// <summary>Featured Items Controls</summary>
+	public partial interface IFeaturedItemsControls : IPublishedContent
+	{
+		/// <summary>Featured Items</summary>
+		Archetype.Models.ArchetypeModel FeaturedItems { get; }
+	}
+
+	/// <summary>Featured Items Controls</summary>
+	[PublishedContentModel("featuredItemsControls")]
+	public partial class FeaturedItemsControls : PublishedContentModel, IFeaturedItemsControls
+	{
+#pragma warning disable 0109 // new is redundant
+		public new const string ModelTypeAlias = "featuredItemsControls";
+		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
+#pragma warning restore 0109
+
+		public FeaturedItemsControls(IPublishedContent content)
+			: base(content)
+		{ }
+
+#pragma warning disable 0109 // new is redundant
+		public new static PublishedContentType GetModelContentType()
+		{
+			return PublishedContentType.Get(ModelItemType, ModelTypeAlias);
+		}
+#pragma warning restore 0109
+
+		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<FeaturedItemsControls, TValue>> selector)
+		{
+			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
+		}
+
+		///<summary>
+		/// Featured Items: Enter the featured  items to display in the featured section
+		///</summary>
+		[ImplementPropertyType("featuredItems")]
+		public Archetype.Models.ArchetypeModel FeaturedItems
+		{
+			get { return GetFeaturedItems(this); }
+		}
+
+		/// <summary>Static getter for Featured Items</summary>
+		public static Archetype.Models.ArchetypeModel GetFeaturedItems(IFeaturedItemsControls that) { return that.GetPropertyValue<Archetype.Models.ArchetypeModel>("featuredItems"); }
 	}
 
 	/// <summary>Folder</summary>

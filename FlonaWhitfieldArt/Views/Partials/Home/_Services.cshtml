@@ -1,34 +1,74 @@
-﻿
-@{
-    ViewBag.Title = "_Services";
-}
+﻿@*@inherits  UmbracoViewPage<List<FeaturedItem>>
+@using FlonaWhitfieldArt.Models
 
-<div id="fh5co-services-section">
+
+<div id="fh5co-featured-section">
     <div class="container">
         <div class="row">
-            <div class="col-md-6 col-md-offset-3 text-center fh5co-heading">
-                <h2>Our Awesome Services</h2>
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. </p>
+            <div class="col-md-6">
+                @RenderFeaturedItem(@Model[0],null)
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4 services-inner text-center">
-                <span><i class="sl-icon-graph"></i></span>
-                <h3>Finance Dashboard</h3>
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+            <div class="col-md-6">
+                @RenderFeaturedItem(@Model[1], "featured-gird-2")
+                <div class="row">
+                    <div class="col-md-6">
+                        @RenderFeaturedItem(@Model[2], "featured-gird-2")
+                    </div>
+                    <div class="col-md-6">
+                        @RenderFeaturedItem(@Model[3], "featured-gird-2")
+                    </div>
+                </div>
             </div>
-            <div class="col-md-4 services-inner text-center">
-                <span><i class="sl-icon-heart"></i></span>
-                <h3>Made with Love</h3>
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
-            </div>
-            <div class="col-md-4 services-inner text-center">
-                <span><i class="sl-icon-key"></i></span>
-                <h3>Help &amp; Support</h3>
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
-            </div>
-
         </div>
     </div>
 </div>
-
+@helper RenderFeaturedItem(FeaturedItem item,string extraClass) { 
+                       
+                        <a href = "@item.LinkUrl" class="featured-grid @extraClass" style="background-image: url(@item.ImageUrl);">
+                            <div class="desc">
+                                <h3>@item.Name</h3>
+                                <span>@item.Category</span>
+                            </div>
+                        </a>
+                   
+    }*@
+<div id="fh5co-featured-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <a href="#" class="featured-grid" style="background-image: url(images/image_6.jpg);">
+                    <div class="desc">
+                        <h3>Work with love</h3>
+                        <span>Web Design</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="#" class="featured-grid featured-grid-2" style="background-image: url(images/image_2.jpg);">
+                    <div class="desc">
+                        <h3>Music Lover</h3>
+                        <span>Application</span>
+                    </div>
+                </a>
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="#" class="featured-grid featured-grid-2" style="background-image: url(images/image_3.jpg);">
+                            <div class="desc">
+                                <h3>Travel</h3>
+                                <span>Illustration</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="#" class="featured-grid featured-grid-2" style="background-image: url(images/image_8.jpg);">
+                            <div class="desc">
+                                <h3>Captured</h3>
+                                <span>Photo</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+﻿@model  TestimonialsModel
+@using FlonaWhitfieldArt.Models
+@{
+    ViewBag.Title = "_Clients";
+}
+
+<div id="fh5co-client-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3 text-center fh5co-heading">
+                <h2>@Model.Title</h2>
+                @Html.Raw(Model.Introduction)
+            </div>
+        </div>
+        <div class="row">
+            @if (Model.Testimonials != null)
+            {
+                foreach (TestimonialModel testimonials in Model.Testimonials)
+                {
+                    <div class="@(Model.ColumClass) text-center">
+                        <div class="testimony">
+                            <span class="quote"><i class="icon-quote-right"></i></span>
+                            <blockquote>
+                                <p>@testimonials.Quote</p>
+                                <span>@testimonials.Name<a href="#" class="icon-twitter twitter-color"></a></span>
+                            </blockquote>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div>aaaaa</div>
+            }
+            </div>
+    </div>
+</div>
+

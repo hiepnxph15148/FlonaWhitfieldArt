@@ -8,24 +8,29 @@ using FlonaWhitfieldArt.Models;
 using Umbraco.Core.Models;
 using Umbraco.Web;
 using System.Runtime.Caching;
+using Umbraco.Core.Models.PublishedContent;
+
 namespace FlonaWhitfieldArt.Controllers
 {
     public class SiteLayoutController : SurfaceController
     {
-        private const string PARTIAL_VIEW_FOLDER = "~/Views/Partials/SiteLayout/";
+        private string PartialoViewPath(string name)
+        {
+            return $"~/Views/Partials/SiteLayout/{name}.cshtml";
+        }
         // GET: StiteLayout
-    
+
         public ActionResult RenderFooter()
         {
-            return PartialView(PARTIAL_VIEW_FOLDER + "_Footer.cshtml");
+            return PartialView(PartialoViewPath( "_Footer"));
         }
         public ActionResult RenderIntro()
         {
-            return PartialView(PARTIAL_VIEW_FOLDER + "_Intro.cshtml");
+            return PartialView(PartialoViewPath( "_Intro"));
         }
         public ActionResult RenderTitleControls()
         {
-            return PartialView(PARTIAL_VIEW_FOLDER + "_TitleControls.cshtml");
+            return PartialView(PartialoViewPath("_TitleControls"));
         }
         /// <summary>
         /// Renders the top navigation in the header partial
@@ -33,10 +38,10 @@ namespace FlonaWhitfieldArt.Controllers
         /// <returns>Partial view with a model</returns>
         public ActionResult RenderHeader()
         {
-            List<NavigationListItem> nav = GetObjectFromCache<List<NavigationListItem>>("mainNav", 5, GetNavigationModelFromDatabase);
-            return PartialView(PARTIAL_VIEW_FOLDER + "_Header.cshtml", nav);
+            List<NavigationListItem> nav = GetObjectFromCache<List<NavigationListItem>>("mainNav", 0, GetNavigationModelFromDatabase);
+            return PartialView(PartialoViewPath ( "_Header"), nav);
         }
-     
+
 
         /// <summary>
         /// Finds the home page and gets the navigation structure based on it and it's children
@@ -44,7 +49,7 @@ namespace FlonaWhitfieldArt.Controllers
         /// <returns>A List of NavigationListItems, representing the structure of the site.</returns>
         private List<NavigationListItem> GetNavigationModelFromDatabase()
         {
-            IPublishedContent homePage = CurrentPage.AncestorOrSelf(1).DescendantsOrSelf().Where(x => x.DocumentTypeAlias == "home").FirstOrDefault();
+            IPublishedContent homePage = CurrentPage.AncestorOrSelf("home");
             List<NavigationListItem> nav = new List<NavigationListItem>();
             nav.Add(new NavigationListItem(new NavigationLink(homePage.Url, homePage.Name)));
             nav.AddRange(GetChildNavigationList(homePage));
@@ -59,7 +64,7 @@ namespace FlonaWhitfieldArt.Controllers
         private List<NavigationListItem> GetChildNavigationList(IPublishedContent page)
         {
             List<NavigationListItem> listItems = null;
-            var childPages = page.Children.Where("Visible").Where(x => !x.HasValue("excludeFromTopNavigation") || (x.HasValue("excludeFromTopNavigation") && !x.GetPropertyValue<bool>("excludeFromTopNavigation")));
+            var childPages = page.Children.Where("Visible").Where(x => x.Level <= 2).Where(x => !x.HasValue("excludeFromTopNavigation") || (x.HasValue("excludeFromTopNavigation") && !x.GetPropertyValue<bool>("excludeFromTopNavigation")));
             if (childPages != null && childPages.Any() && childPages.Count() > 0)
             {
                 listItems = new List<NavigationListItem>();
